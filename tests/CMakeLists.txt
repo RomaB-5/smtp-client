@@ -18,6 +18,7 @@ if (BUILD_TESTS)
         TestsMailMessageFormatter.cpp
         TestsMailAttachment.cpp
         TestsSMTPResponse.cpp
+        TestsDB.cpp
     )
 
     target_include_directories(TestsMain PRIVATE 
