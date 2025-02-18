@@ -1,19 +1,16 @@
-#include "SQLiteDB.h"
+#include "db.h"
 #include <iostream>
 #include <sqlite3.h>
 #include <cstdlib>
 #include <utility>
 #include <sstream>
 
-// SQLiteDB class implementation
-
 SQLiteDB::SQLiteDB(const std::string& db_name) {
     int rc = sqlite3_open(db_name.c_str(), &db);
     if (rc) {
-        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-        std::exit(1); // Exiting due to failed DB connection
-    } else {
-        std::cout << "Opened database successfully\n";
+        std::string error_message = "Can't open database: " + std::string(sqlite3_errmsg(db));
+        sqlite3_close(db);
+        throw std::runtime_error(error_message);
     }
 }
 
@@ -59,7 +56,6 @@ sqlite3* SQLiteDB::get_db() const {
     return db;
 }
 
-// EmailLogDB namespace implementation
 
 bool EmailLogDB::create_smtp_tables(SQLiteDB& db) {
     std::string create_email_log_table = 
@@ -86,7 +82,7 @@ int EmailLogDB::count_sent_emails(SQLiteDB& db) {
     std::vector<std::vector<std::string>> result;
 
     if (db.execute_query(count_sql, result) && !result.empty()) {
-        return std::stoi(result[0][0]); // First column of the first row contains the count
+        return std::stoi(result[0][0]);
     }
     return 0;
 }
